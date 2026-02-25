@@ -11,8 +11,9 @@ import type { ReportData } from '@/lib/types'
 export async function generateMetadata({
   params,
 }: {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }): Promise<Metadata> {
+  await params // Next.js 15 requires awaiting params
   return {
     title: `Revenue Friction Snapshot | ARPI`,
     robots: 'noindex, nofollow',
@@ -44,9 +45,10 @@ import StickyHeader from '@/components/report/StickyHeader'
 export default async function ReportPage({
   params,
 }: {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }) {
-  const report = await getReport(params.slug)
+  const { slug } = await params
+  const report = await getReport(slug)
 
   if (!report) notFound()
 
