@@ -1,0 +1,92 @@
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: #F9F8F6;
+    color: #1A1917;
+    font-family: 'DM Sans', system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  /* Remove default button styles */
+  button {
+    font-family: inherit;
+  }
+
+  /* Focus styles — accessible but not ugly */
+  :focus-visible {
+    outline: 2px solid #C8B89A;
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+}
+
+@layer components {
+  /* Content wrapper — max 720px centered */
+  .content-wrap {
+    @apply max-w-content mx-auto px-6 w-full;
+  }
+
+  /* Section spacing */
+  .section {
+    @apply py-16;
+  }
+
+  /* Divider line */
+  .divider {
+    @apply border-t border-border;
+  }
+
+  /* Confidence chip base */
+  .chip {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 text-2xs font-mono
+           uppercase tracking-widest border rounded-sm;
+  }
+  .chip-high {
+    @apply chip bg-surface border-border text-primary;
+  }
+  .chip-medium {
+    @apply chip bg-friction-mid-bg border-amber-200 text-friction-mid;
+  }
+  .chip-low {
+    @apply chip bg-gray-50 border-gray-200 text-muted;
+  }
+
+  /* Score ring label colors */
+  .score-low    { color: #2D6A4F; }
+  .score-mid    { color: #B45309; }
+  .score-high   { color: #991B1B; }
+
+  /* Staggered fade-up for lists */
+  .stagger-1 { animation-delay: 0ms; }
+  .stagger-2 { animation-delay: 80ms; }
+  .stagger-3 { animation-delay: 160ms; }
+  .stagger-4 { animation-delay: 240ms; }
+}
+
+@layer utilities {
+  .font-serif   { font-family: 'Instrument Serif', Georgia, serif; }
+  .font-mono    { font-family: 'JetBrains Mono', Menlo, monospace; }
+
+  /* Tight tracking for labels */
+  .label-track  { letter-spacing: 0.1em; }
+
+  /* Hide scrollbar */
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+}
