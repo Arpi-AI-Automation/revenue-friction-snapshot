@@ -25,8 +25,9 @@ async function getReport(slug: string): Promise<ReportData | null> {
   // In production this reads from Vercel KV.
   // Stub returns null for now — wired in when auditor is built.
   try {
-    const { kv } = await import('@vercel/kv')
-    const data = await kv.get<ReportData>(`report:${slug}`)
+    const { Redis } = await import('@upstash/redis')
+    const redis = Redis.fromEnv()
+    const data = await redis.get<ReportData>(`report:${slug}`)
     return data ?? null
   } catch {
     return null
