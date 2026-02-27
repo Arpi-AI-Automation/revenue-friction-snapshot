@@ -4,7 +4,7 @@ import { useState, useCallback } from 'react'
 
 // ─── Password ─────────────────────────────────────────────────────────────────
 // Change this to whatever you want your audit password to be
-const AUDIT_PASSWORD = 'arpivypi2026'
+const AUDIT_PASSWORD = 'arpi2024'
 
 // ─── Manual checklist ────────────────────────────────────────────────────────
 
@@ -147,35 +147,25 @@ interface AutoSignal {
 async function fetchAutoSignals(domain: string): Promise<AutoSignal[]> {
   const signals: AutoSignal[] = []
 
-  // HTML signals via CORS proxy
   try {
-    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(`https://${domain}`)}`
-    const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(8000) })
-    const json = await res.json() as { contents: string }
-    const html = (json.contents || '').toLowerCase()
+    const res = await fetch(`/api/html-scan?domain=${encodeURIComponent(domain)}`)
+    if (!res.ok) throw new Error(`Status ${res.status}`)
+    const d = await res.json() as {
+      platform: string; ga4: boolean; meta_pixel: boolean
+      email: boolean; schema: boolean; ssl: boolean; error?: string
+    }
 
-    const platform = html.includes('cdn.shopify.com') || html.includes('myshopify')
-      ? 'Shopify' : html.includes('woocommerce') ? 'WooCommerce'
-      : html.includes('bigcommerce') ? 'BigCommerce' : 'Unknown'
+    if (d.error) throw new Error(d.error)
 
-    signals.push({ label: 'Platform', value: platform, status: platform !== 'Unknown' ? 'green' : 'amber', impactWeight: 2 })
-
-    const hasGA4 = html.includes('gtag') || html.includes('googletagmanager')
-    signals.push({ label: 'Google Analytics 4', value: hasGA4 ? 'Detected' : 'Not found', status: hasGA4 ? 'green' : 'red', impactWeight: 7 })
-
-    const hasMeta = html.includes('connect.facebook.net') || html.includes('fbevents')
-    signals.push({ label: 'Meta Pixel', value: hasMeta ? 'Detected' : 'Not found', status: hasMeta ? 'green' : 'amber', impactWeight: 6 })
-
-    const hasEmail = html.includes('klaviyo') || html.includes('omnisend') || html.includes('mailchimp')
-    signals.push({ label: 'Email platform (Klaviyo/Omnisend)', value: hasEmail ? 'Detected' : 'Not found', status: hasEmail ? 'green' : 'amber', impactWeight: 5 })
-
-    const hasSchema = html.includes('"@type"') || html.includes("'@type'")
-    signals.push({ label: 'Schema / structured data', value: hasSchema ? 'Detected' : 'Not found', status: hasSchema ? 'green' : 'amber', impactWeight: 4 })
-
+    signals.push({ label: 'Platform', value: d.platform, status: d.platform !== 'Unknown' ? 'green' : 'amber', impactWeight: 2 })
+    signals.push({ label: 'Google Analytics 4', value: d.ga4 ? 'Detected' : 'Not found', status: d.ga4 ? 'green' : 'red', impactWeight: 7 })
+    signals.push({ label: 'Meta Pixel', value: d.meta_pixel ? 'Detected' : 'Not found', status: d.meta_pixel ? 'green' : 'amber', impactWeight: 6 })
+    signals.push({ label: 'Email platform (Klaviyo/Omnisend)', value: d.email ? 'Detected' : 'Not found', status: d.email ? 'green' : 'amber', impactWeight: 5 })
+    signals.push({ label: 'Schema / structured data', value: d.schema ? 'Detected' : 'Not found', status: d.schema ? 'green' : 'amber', impactWeight: 4 })
     signals.push({ label: 'SSL / HTTPS', value: 'Active', status: 'green', impactWeight: 3 })
 
-  } catch {
-    signals.push({ label: 'HTML scan', value: 'Failed (CORS or timeout)', status: 'amber', impactWeight: 0 })
+  } catch (e) {
+    signals.push({ label: 'HTML scan', value: `Failed: ${String(e)}`, status: 'amber', impactWeight: 0 })
   }
 
   return signals
