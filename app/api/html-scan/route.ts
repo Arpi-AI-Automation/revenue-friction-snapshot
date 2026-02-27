@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+export const maxDuration = 60 // seconds — needed for PageSpeed API
+
 export async function GET(req: NextRequest) {
   const domain = req.nextUrl.searchParams.get('domain')
   if (!domain) return NextResponse.json({ error: 'domain required' }, { status: 400 })
@@ -41,7 +43,7 @@ export async function GET(req: NextRequest) {
         `https://www.googleapis.com/pagespeedonline/v5/runPagespeed` +
         `?url=https://${domain}&strategy=mobile&category=performance&key=${apiKey}`
 
-      const psRes = await fetch(psUrl, { signal: AbortSignal.timeout(25000) })
+      const psRes = await fetch(psUrl, { signal: AbortSignal.timeout(55000) })
       if (psRes.ok) {
         const data = await psRes.json() as {
           lighthouseResult?: {
