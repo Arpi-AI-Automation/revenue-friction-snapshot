@@ -52,13 +52,14 @@ export interface PriorityFix {
 // ─── Report ──────────────────────────────────────────────────────────────────
 
 export interface ReportData {
-  slug:        string
-  domain:      string
-  platform:    Platform
-  generatedAt: string                // ISO 8601
-  status:      ReportStatus
-  buckets:     BucketScore[]
-  topFixes:    PriorityFix[]
+  slug:           string
+  domain:         string
+  platform:       Platform
+  generatedAt:    string                // ISO 8601
+  status:         ReportStatus
+  buckets:        BucketScore[]
+  topFixes:       PriorityFix[]
+  compositeScore: number                // 0-100 weighted average across buckets
 }
 
 // ─── API ─────────────────────────────────────────────────────────────────────
