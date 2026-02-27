@@ -4,7 +4,7 @@ import { useState, useCallback } from 'react'
 
 // ─── Password ─────────────────────────────────────────────────────────────────
 // Change this to whatever you want your audit password to be
-const AUDIT_PASSWORD = 'arpi2024'
+const AUDIT_PASSWORD = 'arpivypi2026'
 
 // ─── Manual checklist ────────────────────────────────────────────────────────
 
