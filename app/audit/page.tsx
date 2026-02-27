@@ -333,8 +333,8 @@ function parseAutoSignals(d: ScanResult): AutoSignal[] {
   if (d.speed_error && !d.mobile_score) {
     signals.push({
       label: 'Speed scan',
-      value: 'Not available (add PAGESPEED_API_KEY)',
-      status: 'none',
+      value: d.speed_error || 'Not available',
+      status: 'amber',
       impactWeight: 0,
     })
   }
