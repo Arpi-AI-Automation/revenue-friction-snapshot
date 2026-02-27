@@ -809,9 +809,9 @@ ARPI · arpi-ai.com`
                       {autoSignals.map(s => {
                         const sm = STATUS_META[s.status]
                         return (
-                          <div key={s.label} className={`flex items-center justify-between px-2.5 py-1.5 rounded-sm border text-2xs ${sm.bgClass} ${sm.borderClass}`}>
+                          <div key={s.label} className={`flex items-center justify-between px-2.5 py-1.5 rounded-sm border text-2xs ${s.impactWeight === 0 ? 'bg-transparent border-border' : sm.bgClass + ' ' + sm.borderClass}`}>
                             <span className="text-muted truncate pr-2">{s.label}</span>
-                            <span className={`font-mono font-medium shrink-0 ${sm.textClass}`}>{s.value}</span>
+                            <span className={`font-mono font-medium shrink-0 truncate max-w-[120px] ${s.impactWeight === 0 ? 'text-muted' : sm.textClass}`} title={s.value}>{s.value}</span>
                           </div>
                         )
                       })}
