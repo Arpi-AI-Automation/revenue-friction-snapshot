@@ -580,6 +580,7 @@ export default function AuditPage() {
           savedAt: new Date().toISOString(),
           fullReport: full,
           emailDraft: email,
+          autoSignals,
         }),
       })
       setSaved(true)
