@@ -519,7 +519,9 @@ export default function AuditPage() {
   const [reportEmail, setReportEmail] = useState('')
   const [reportFull,  setReportFull]  = useState('')
   const [overallScore, setOverallScore] = useState(0)
-  const [copied, setCopied] = useState('')
+  const [copied, setCopied]   = useState('')
+  const [saving, setSaving]   = useState(false)
+  const [saved,  setSaved]    = useState(false)
 
   const domain = website.trim().toLowerCase()
     .replace(/^https?:\/\//i, '').replace(/\/.*$/, '')
@@ -561,6 +563,28 @@ export default function AuditPage() {
 
   function getStatus(sectionId: string, i: number): StatusValue {
     return (statuses[`${sectionId}_${i}`] || 'none') as StatusValue
+  }
+
+  async function saveReport(email: string, full: string, score: number) {
+    setSaving(true)
+    const totalRed   = [...autoSignals.filter(s => s.status === 'red'),   ...Object.values(statuses).filter(v => v === 'red')].length
+    const totalAmber = [...autoSignals.filter(s => s.status === 'amber'), ...Object.values(statuses).filter(v => v === 'amber')].length
+    const id = `${domain.replace(/\./g, '-')}-${Date.now()}`
+    try {
+      await fetch('/api/saved-reports', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-audit-password': 'arpi2024' },
+        body: JSON.stringify({
+          id, domain, prospect, company, score,
+          totalRed, totalAmber,
+          savedAt: new Date().toISOString(),
+          fullReport: full,
+          emailDraft: email,
+        }),
+      })
+      setSaved(true)
+    } catch { /* fail silently */ }
+    setSaving(false)
   }
 
   function generateReport() {
@@ -651,6 +675,7 @@ ARPI · arpi-ai.com`
   }
 
   function resetAudit() {
+    setSaved(false)
     setPhase('setup')
     setAutoSignals([])
     setStatuses({})
@@ -954,9 +979,23 @@ ARPI · arpi-ai.com`
               </pre>
             </div>
 
-            <button onClick={() => setPhase('audit')} className="mt-6 text-2xs font-mono text-muted hover:text-primary transition-colors">
-              ← Back to audit
-            </button>
+            <div className="mt-6 flex items-center gap-4">
+              <button onClick={() => setPhase('audit')} className="text-2xs font-mono text-muted hover:text-primary transition-colors">
+                ← Back to audit
+              </button>
+              <button
+                onClick={() => saveReport(reportEmail, reportFull, overallScore)}
+                disabled={saving || saved}
+                className="text-2xs font-mono border border-border px-3 py-1.5 rounded-sm transition-colors disabled:opacity-50 hover:text-primary hover:border-primary/40 text-muted"
+              >
+                {saved ? '✓ Saved to reports' : saving ? 'Saving…' : 'Save report'}
+              </button>
+              {saved && (
+                <a href="/audit/reports" className="text-2xs font-mono text-accent-dim hover:text-primary transition-colors">
+                  View all reports →
+                </a>
+              )}
+            </div>
           </div>
         </div>
       )}
