@@ -2,6 +2,28 @@
 
 import { useState } from 'react'
 
+type SignalStatus = 'none' | 'green' | 'amber' | 'red'
+
+interface AutoSignal {
+  label:        string
+  value:        string
+  status:       SignalStatus
+  impactWeight: number
+}
+
+const STATUS_TEXT: Record<SignalStatus, string> = {
+  none:  'text-muted',
+  green: 'text-friction-low',
+  amber: 'text-friction-mid',
+  red:   'text-friction-high',
+}
+const STATUS_BG: Record<SignalStatus, string> = {
+  none:  'bg-transparent border-border',
+  green: 'bg-friction-low-bg border-friction-low/30',
+  amber: 'bg-friction-mid-bg border-friction-mid/30',
+  red:   'bg-friction-high-bg border-friction-high/30',
+}
+
 const PASSWORD = 'arpi2024'
 
 interface ReportSummary {
@@ -16,8 +38,9 @@ interface ReportSummary {
 }
 
 interface FullReport extends ReportSummary {
-  fullReport: string
-  emailDraft: string
+  fullReport:   string
+  emailDraft:   string
+  autoSignals?: AutoSignal[]
 }
 
 function scoreLabel(score: number) {
@@ -155,6 +178,24 @@ export default function SavedReportsPage() {
                 <p className="text-2xs text-muted font-mono">{selected.prospect} @ {selected.company}</p>
               </div>
             </div>
+
+            {/* Auto-detected signals */}
+            {selected.autoSignals && selected.autoSignals.length > 0 && (
+              <div className="bg-surface border border-border rounded-sm p-inner mb-6">
+                <p className="text-2xs font-mono label-track uppercase text-accent-dim mb-4">Auto-detected signals</p>
+                <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3">
+                  {selected.autoSignals.map(s => (
+                    <div key={s.label}
+                      className={`flex items-center justify-between px-2.5 py-1.5 rounded-sm border text-2xs ${STATUS_BG[s.status]}`}>
+                      <span className="text-muted truncate pr-2">{s.label}</span>
+                      <span className={`font-mono font-medium shrink-0 truncate max-w-[80px] ${STATUS_TEXT[s.status]}`} title={s.value}>
+                        {s.value}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Email draft */}
             <div className="bg-surface border border-border rounded-sm p-inner mb-6">
