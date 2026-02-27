@@ -2,17 +2,27 @@ import { NextRequest, NextResponse } from 'next/server'
 
 const PASSWORD = 'arpi2024'
 
+export interface AutoSignal {
+  label:         string
+  value:         string
+  status:        'none' | 'green' | 'amber' | 'red'
+  impactWeight:  number
+  businessLabel?: string
+  businessPain?:  string
+}
+
 export interface SavedReport {
-  id:           string       // domain + timestamp slug
+  id:           string
   domain:       string
   prospect:     string
   company:      string
   score:        number
   totalRed:     number
   totalAmber:   number
-  savedAt:      string       // ISO
-  fullReport:   string       // plain text full report
-  emailDraft:   string       // plain text email
+  savedAt:      string
+  fullReport:   string
+  emailDraft:   string
+  autoSignals?: AutoSignal[]
 }
 
 async function getRedis() {
