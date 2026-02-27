@@ -4,7 +4,7 @@ import { auditSpeed }          from './speed'
 import { auditTracking }       from './tracking'
 import { auditFunnel }         from './funnel'
 import { auditTrust }          from './trust'
-import { deriveTopFixes, deriveReportStatus } from './scoring'
+import { deriveTopFixes, deriveReportStatus, deriveCompositeScore } from './scoring'
 
 export async function runAudit(
   slug: string,
@@ -46,8 +46,9 @@ export async function runAudit(
     unwrap(trustResult,    'trust'),
   ]
 
-  const topFixes = deriveTopFixes(buckets)
-  const status   = deriveReportStatus(buckets)
+  const topFixes      = deriveTopFixes(buckets)
+  const status        = deriveReportStatus(buckets)
+  const compositeScore = deriveCompositeScore(buckets)
 
   return {
     slug,
@@ -57,5 +58,6 @@ export async function runAudit(
     status,
     buckets,
     topFixes,
+    compositeScore,
   }
 }

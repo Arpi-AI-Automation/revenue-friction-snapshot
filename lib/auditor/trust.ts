@@ -114,27 +114,42 @@ export async function auditTrust(hostname: string): Promise<BucketScore> {
     }
   }
 
-  // Also check for star rating schema markup
-  const hasSchemaReviews = source.includes('"aggregaterating"') ||
-                           source.includes('aggregateRating') ||
-                           source.includes('"@type":"review"') ||
-                           source.includes('"reviewcount"')
+  // Require BOTH platform script AND visible rating markup to pass.
+  // Script alone (Okendo loaded but reviews not rendered on page) = partial only.
+  const hasVisibleRatings = source.includes('aggregaterating') ||
+                            source.includes('reviewcount') ||
+                            source.includes('star-rating') ||
+                            source.includes('rating-stars') ||
+                            source.includes('review-stars') ||
+                            source.includes('okendo-reviews') ||
+                            source.includes('data-rating')
 
-  if (detectedReview || hasSchemaReviews) {
+  if (detectedReview && hasVisibleRatings) {
     earned += 20
-    const label = detectedReview
-      ? `${detectedReview} reviews detected`
-      : 'Review schema markup detected'
     findings.push({
       id:               'reviews',
-      label,
+      label:            `${detectedReview} reviews detected and visible`,
       passed:           true,
       confidence:       'medium',
-      confidenceReason: detectedReview
-        ? `${detectedReview} script found in page source.`
-        : 'Structured data with review/rating markup found in source.',
+      confidenceReason: `${detectedReview} script found and rating markup confirmed in page source.`,
       impactWeight:     8,
       actionability:    'Low',
+    })
+  } else if (detectedReview && !hasVisibleRatings) {
+    earned += 8
+    findings.push({
+      id:               'reviews-not-visible',
+      label:            `${detectedReview} installed but ratings not visible site-wide`,
+      passed:           false,
+      partial:          true,
+      confidence:       'medium',
+      confidenceReason: `${detectedReview} script detected but no visible star rating markup found. Reviews may exist on product pages but are not surfaced site-wide.`,
+      impactWeight:     8,
+      actionability:    'Medium',
+      fixTitle:         'Surface reviews and star ratings site-wide',
+      fixRationale:     `${detectedReview} is installed but star ratings are not visible in page source. Cold paid traffic needs social proof at the decision point — not buried in a tab.`,
+      fixOutcome:       'Displaying star ratings site-wide may increase purchase confidence for first-time visitors arriving from paid channels.',
+      fixEffort:        'Low',
     })
   } else {
     findings.push({

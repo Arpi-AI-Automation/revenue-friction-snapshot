@@ -69,3 +69,20 @@ export function deriveReportStatus(
   const unavailableCount = buckets.filter(b => b.unavailable).length
   return unavailableCount > 0 ? 'partial' : 'complete'
 }
+
+export function deriveCompositeScore(buckets: BucketScore[]): number {
+  // Weighted: speed 30%, tracking 20%, funnel 25%, trust 25%
+  const weights: Record<string, number> = {
+    speed: 0.30, tracking: 0.20, funnel: 0.25, trust: 0.25,
+  }
+  let total = 0
+  let weightSum = 0
+  for (const bucket of buckets) {
+    if (bucket.unavailable) continue
+    const w = weights[bucket.bucket] ?? 0.25
+    total += bucket.score * w
+    weightSum += w
+  }
+  if (weightSum === 0) return 0
+  return Math.round(total / weightSum)
+}
