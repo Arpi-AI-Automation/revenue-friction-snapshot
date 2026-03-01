@@ -6,6 +6,13 @@ export const metadata: Metadata = {
   description:
     'Identify conversion friction across speed, funnel flow, and tracking before scaling paid traffic.',
   robots: 'noindex, nofollow',
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: '32x32', type: 'image/x-icon' },
+      { url: '/icon.svg',    type: 'image/svg+xml' },
+    ],
+    apple: '/apple-touch-icon.png',
+  },
   openGraph: {
     title: 'Revenue Friction Snapshot | ARPI',
     description:

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <rect width="32" height="32" rx="5" fill="#E8E4DC"/>
+  <!-- Same serif A, dark on light -->
+  <path d="M4 26 L12.5 6 L14 6 L5.8 26 Z" fill="#1A1917"/>
+  <path d="M14 6 L15.5 6 L27 26 L25 26 L14.8 8.5 Z" fill="#1A1917"/>
+  <rect x="9.5" y="17.5" width="11" height="1.8" fill="#1A1917"/>
+  <rect x="2.5" y="24.5" width="5" height="1.5" fill="#1A1917"/>
+  <rect x="23.5" y="24.5" width="5" height="1.5" fill="#1A1917"/>
+</svg>
